@@ -25,9 +25,7 @@
         .status.disconnected { background: #f8d7da; color: #721c24; }
         .status.connecting { background: #fff3cd; color: #856404; }
         
-        .printer-select {
-            margin-bottom: 20px;
-        }
+        .printer-select { margin-bottom: 20px; }
         .printer-select select {
             width: 100%;
             padding: 12px;
@@ -49,18 +47,9 @@
             padding: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-        .test-card.full-width {
-            grid-column: 1 / -1;
-        }
-        .test-card h3 {
-            margin: 0 0 10px 0;
-            color: #333;
-        }
-        .test-card p {
-            margin: 0 0 15px 0;
-            color: #666;
-            font-size: 14px;
-        }
+        .test-card.full-width { grid-column: 1 / -1; }
+        .test-card h3 { margin: 0 0 10px 0; color: #333; }
+        .test-card p { margin: 0 0 15px 0; color: #666; font-size: 14px; }
         .test-card button {
             width: 100%;
             padding: 12px 20px;
@@ -133,7 +122,7 @@
             🔌 Connect to QZ Tray
         </button>
         <p style="margin-top: 10px; font-size: 13px; color: #666;">
-            ⚠️ When QZ Tray prompts, click <strong>"Allow"</strong> (and optionally "Remember this decision")
+            ⚠️ QZ Tray will ask permission - click <strong>"Allow"</strong> (and "Remember" to save)
         </p>
     </div>
     
@@ -147,43 +136,43 @@
     <div class="test-grid">
         <div class="test-card">
             <h3>Test 1: Basic Text <span id="result1" class="result-badge pending">Not tested</span></h3>
-            <p>Prints simple text. This should work on all printers.</p>
+            <p>Prints simple text. Should work on all printers.</p>
             <button class="btn-primary" onclick="testBasicText()">Print Text</button>
         </div>
         
         <div class="test-card">
             <h3>Test 2: Raw QR Command <span id="result2" class="result-badge pending">Not tested</span></h3>
-            <p>Uses ESC/POS native QR commands. <strong>This is what Lime Booking uses.</strong></p>
+            <p>ESC/POS native QR commands. <strong>What Lime Booking uses.</strong></p>
             <button class="btn-warning" onclick="testRawQR()">Print Raw QR</button>
         </div>
         
         <div class="test-card">
             <h3>Test 3: Image QR (Raster) <span id="result3" class="result-badge pending">Not tested</span></h3>
-            <p>Sends QR as bitmap image. <strong>Should work on all printers.</strong></p>
+            <p>QR as bitmap image. <strong>Should work on all printers.</strong></p>
             <button class="btn-success" onclick="testImageQR()">Print Image QR</button>
         </div>
         
         <div class="test-card">
             <h3>Test 4: 1D Barcode <span id="result4" class="result-badge pending">Not tested</span></h3>
-            <p>Tests Code128 barcode via ESC/POS commands.</p>
+            <p>Code128 barcode via ESC/POS.</p>
             <button class="btn-primary" onclick="testBarcode()">Print Barcode</button>
         </div>
         
         <div class="test-card">
             <h3>Test 5: Raster Logo <span id="result5" class="result-badge pending">Not tested</span></h3>
-            <p>Prints a small test image to verify raster/image support.</p>
+            <p>Small test image for raster support.</p>
             <button class="btn-success" onclick="testRasterImage()">Print Image</button>
         </div>
         
         <div class="test-card">
             <h3>Test 6: Alt QR (Pixel) <span id="result6" class="result-badge pending">Not tested</span></h3>
-            <p>Alternative pixel/HTML printing method.</p>
+            <p>Pixel/HTML printing method.</p>
             <button class="btn-warning" onclick="testAltQR()">Print Alt QR</button>
         </div>
         
         <div class="test-card full-width">
             <h3>🔬 Run Full Diagnostic</h3>
-            <p>Runs all tests sequentially with 3-second delays. Watch the printer and note which tests succeed.</p>
+            <p>Runs all tests with 3-second delays. Watch printer and note which succeed.</p>
             <button class="btn-danger" onclick="runFullDiagnostic()">Run All Tests</button>
         </div>
     </div>
@@ -237,62 +226,13 @@
             return document.getElementById('printerList').value;
         }
         
-        /// Certificate from demo.qz.io
-        var defined_certificate = "-----BEGIN CERTIFICATE-----\n" +
-            "MIIECzCCAvOgAwIBAgIJALY5e90N8M7SMA0GCSqGSIb3DQEBCwUAMIGaMQswCQYD\n" +
-            "VQQGEwJVUzELMAkGA1UECAwCTlkxEjAQBgNVBAcMCUNhbmFzdG90YTEbMBkGA1UE\n" +
-            "CgwSUVogSW5kdXN0cmllcywgTExDMRswGQYDVQQLDBJRWiBJbmR1c3RyaWVzLCBM\n" +
-            "TEMxFDASBgNVBAMMC3FpbmRpZXMuY29tMRowGAYJKoZIhvcNAQkBFgtxekBxei5p\n" +
-            "bzAeFw0xNTAzMTkwMjM4NDVaFw0yNTAzMTYwMjM4NDVaMIGaMQswCQYDVQQGEwJV\n" +
-            "UzELMAkGA1UECAwCTlkxEjAQBgNVBAcMCUNhbmFzdG90YTEbMBkGA1UECgwSUVog\n" +
-            "SW5kdXN0cmllcywgTExDMRswGQYDVQQLDBJRWiBJbmR1c3RyaWVzLCBMTEMxFDAS\n" +
-            "BgNVBAMMC3FpbmRpZXMuY29tMRowGAYJKoZIhvcNAQkBFgtxekBxei5pbzCCASIw\n" +
-            "DQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANDnS3lPGGEPIhSbLN6EYXPLlgfv\n" +
-            "nXa5yLPUvnv09DKVR1fH0a5vw6JexFBb7p0nLDFzGlKWLqHGZ4T+C1xOX8C0MvMr\n" +
-            "Fw/jzINGBB5MCYCMYx0PjNOxDKPHWNHGWl9U4I1L4APJE9qYPT0V2U3K/L0bOF6z\n" +
-            "S8c4V1c4E4C/JyPb8N8H5bsF5dKMQ+Ej1qeT8rJnj4r2OrzHBX3+Dj4L8v5l+AsE\n" +
-            "lMNxT8v5BQvXQgDJEw8JkQ6M9ZV0z/I+yjNMJsZ/aB7OOLRXBYIRoJhk/PZ5nXi+\n" +
-            "dMmJBZpGqHPGj/bAftGOicvAh0vt5+c/m7I0dMTP/WI5HnP3fpjLNCbFiZ0CAwEA\n" +
-            "AaNQME4wHQYDVR0OBBYEFCYpNLjg08rVSRdLKMpxP3e1m3OLMB8GA1UdIwQYMBaA\n" +
-            "FCYpNLjg08rVSRdLKMpxP3e1m3OLMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEL\n" +
-            "BQADggEBAMnrwJCEVCaL+0Cqf3sCMfM+l4KP9gFxtK/VlQbHWoVGZ1U6IPlALMSv\n" +
-            "LoJdCQnLg/u3wG3D/gj8w0FNGwn/9H/Oj/Q/5LMwQ9wP0q1MWAG0X3r0q1rS8q1s\n" +
-            "h/86btqS0BZMRTaG5TLVLoHv2mI8YnEU7xG+5T9dQ0d+fVYWGPqS7H1N5MnO9n0e\n" +
-            "5KPm0J3H2q9Y3LHGnXDXJLVdjLQ/3k3K2Ct7fxNzHf6PSShGqpMxxcxKj5PtS9st\n" +
-            "mjZcPvWq+A0C+8+M7l3FqzqX4N2HeLMzfjNx9jMiPhBMPbMjDAR7gBq+fD8QPPMF\n" +
-            "XmQvkTIIOG49LKFn0N6UTJ5zn3Dc9EQ=\n" +
-            "-----END CERTIFICATE-----";
-
         async function connectQZ() {
             try {
-                log('Setting up QZ Tray with demo certificate...');
+                log('Connecting to QZ Tray (unsigned mode)...');
+                log('QZ Tray should show a permission prompt...', 'info');
                 
-                // Use embedded demo certificate
-                qz.security.setCertificatePromise(function(resolve, reject) {
-                    resolve(defined_certificate);
-                });
-                
-                // Use QZ's demo signature service
-                qz.security.setSignatureAlgorithm("SHA512");
-                qz.security.setSignaturePromise(function(toSign) {
-                    return function(resolve, reject) {
-                        fetch("https://demo.qz.io/assets/signing/sign-message.php?request=" + encodeURIComponent(toSign), {
-                            cache: 'no-store',
-                            headers: { 'Content-Type': 'text/plain' }
-                        })
-                        .then(function(response) {
-                            if (response.ok) {
-                                return response.text();
-                            }
-                            throw new Error('Signature fetch failed');
-                        })
-                        .then(resolve)
-                        .catch(reject);
-                    };
-                });
-                
-                log('Connecting to QZ Tray...');
-                log('If prompted, click ALLOW to trust demo.qz.io', 'info');
+                // DO NOT set any certificate - this triggers unsigned mode
+                // QZ Tray will show "Allow/Deny" prompt for unsigned requests
                 
                 if (qz.websocket.isActive()) {
                     log('Already connected!', 'success');
@@ -301,6 +241,7 @@
                     return;
                 }
                 
+                // Connect without any certificate setup
                 await qz.websocket.connect();
                 
                 updateStatus(true);
@@ -310,10 +251,13 @@
                 
             } catch (err) {
                 log(`Connection failed: ${err}`, 'error');
-                log('Troubleshooting:', 'info');
-                log('1. Check QZ Tray is running', 'info');
-                log('2. Visit https://demo.qz.io and try printing there first', 'info');
-                log('3. If demo.qz.io works, the issue is with this page', 'info');
+                log('---', 'info');
+                log('Troubleshooting for Windows:', 'info');
+                log('1. Right-click QZ Tray icon in system tray', 'info');
+                log('2. Advanced → Site Manager', 'info');
+                log('3. Add: oskarlimebooking-debug.github.io', 'info');
+                log('4. Check "Allow" and Save', 'info');
+                log('5. Try connecting again', 'info');
                 updateStatus(false);
             }
         }
@@ -343,7 +287,7 @@
         }
         
         async function testBasicText() {
-            if (!qzConnected) { log('Not connected! Click Connect first.', 'error'); return; }
+            if (!qzConnected) { log('Not connected!', 'error'); return; }
             try {
                 log('Test 1: Sending basic text...');
                 const config = qz.configs.create(getSelectedPrinter());
@@ -360,7 +304,7 @@
                     '\n\n\n'
                 ];
                 await qz.print(config, data);
-                log('Test 1: Text sent successfully!', 'success');
+                log('Test 1: Sent!', 'success');
                 setResult(1, true);
             } catch (err) {
                 log(`Test 1 failed: ${err}`, 'error');
@@ -369,10 +313,9 @@
         }
         
         async function testRawQR() {
-            if (!qzConnected) { log('Not connected! Click Connect first.', 'error'); return; }
+            if (!qzConnected) { log('Not connected!', 'error'); return; }
             try {
-                log('Test 2: Sending raw ESC/POS QR commands...');
-                log('(This uses GS ( k commands - same as Lime Booking)', 'info');
+                log('Test 2: Raw ESC/POS QR (GS ( k)...');
                 
                 const config = qz.configs.create(getSelectedPrinter(), { encoding: 'ISO-8859-1' });
                 const qrData = 'https://limebooking.com/test';
@@ -391,14 +334,13 @@
                     '\x1D\x28\x6B' + size1 + size0 + '\x31\x50\x30' + qrData,
                     '\x1D\x28\x6B\x03\x00\x31\x51\x30',
                     '\n\n',
-                    'If you see text instead\n',
-                    'of QR = NOT SUPPORTED\n',
+                    'Text instead of QR?\n',
+                    '= NOT SUPPORTED\n',
                     '\n\n\n'
                 ];
                 
                 await qz.print(config, data);
-                log('Test 2: Raw QR commands sent!', 'success');
-                log('CHECK PRINTER: QR code or garbled text?', 'info');
+                log('Test 2: Sent! Check printer output.', 'success');
                 setResult(2, true);
             } catch (err) {
                 log(`Test 2 failed: ${err}`, 'error');
@@ -407,10 +349,9 @@
         }
         
         async function testImageQR() {
-            if (!qzConnected) { log('Not connected! Click Connect first.', 'error'); return; }
+            if (!qzConnected) { log('Not connected!', 'error'); return; }
             try {
-                log('Test 3: Sending QR as raster image...');
-                log('(This should work on ALL thermal printers)', 'info');
+                log('Test 3: QR as raster image...');
                 
                 const config = qz.configs.create(getSelectedPrinter());
                 const data = [
@@ -429,14 +370,12 @@
                         }
                     },
                     '\n\n',
-                    'If QR prints = IMAGE\n',
-                    'mode works!\n',
+                    'QR above = SUCCESS\n',
                     '\n\n\n'
                 ];
                 
                 await qz.print(config, data);
-                log('Test 3: Image QR sent!', 'success');
-                log('CHECK PRINTER: Does QR image print?', 'info');
+                log('Test 3: Sent! Check if QR image printed.', 'success');
                 setResult(3, true);
             } catch (err) {
                 log(`Test 3 failed: ${err}`, 'error');
@@ -445,9 +384,9 @@
         }
         
         async function testBarcode() {
-            if (!qzConnected) { log('Not connected! Click Connect first.', 'error'); return; }
+            if (!qzConnected) { log('Not connected!', 'error'); return; }
             try {
-                log('Test 4: Sending 1D barcode...');
+                log('Test 4: 1D barcode...');
                 
                 const config = qz.configs.create(getSelectedPrinter());
                 const barcodeData = '123456789';
@@ -463,13 +402,12 @@
                     String.fromCharCode(barcodeData.length),
                     barcodeData,
                     '\n\n',
-                    'If barcode prints =\n',
-                    '1D supported!\n',
+                    'Barcode above = OK\n',
                     '\n\n\n'
                 ];
                 
                 await qz.print(config, data);
-                log('Test 4: Barcode sent!', 'success');
+                log('Test 4: Sent!', 'success');
                 setResult(4, true);
             } catch (err) {
                 log(`Test 4 failed: ${err}`, 'error');
@@ -478,9 +416,9 @@
         }
         
         async function testRasterImage() {
-            if (!qzConnected) { log('Not connected! Click Connect first.', 'error'); return; }
+            if (!qzConnected) { log('Not connected!', 'error'); return; }
             try {
-                log('Test 5: Sending raster image...');
+                log('Test 5: Raster image...');
                 
                 const config = qz.configs.create(getSelectedPrinter());
                 const data = [
@@ -503,7 +441,7 @@
                 ];
                 
                 await qz.print(config, data);
-                log('Test 5: Raster image sent!', 'success');
+                log('Test 5: Sent!', 'success');
                 setResult(5, true);
             } catch (err) {
                 log(`Test 5 failed: ${err}`, 'error');
@@ -512,25 +450,21 @@
         }
         
         async function testAltQR() {
-            if (!qzConnected) { log('Not connected! Click Connect first.', 'error'); return; }
+            if (!qzConnected) { log('Not connected!', 'error'); return; }
             try {
-                log('Test 6: Sending QR via pixel method...');
+                log('Test 6: Pixel/HTML method...');
                 
                 const config = qz.configs.create(getSelectedPrinter(), {
                     units: 'mm',
                     size: { width: 58 }
                 });
                 
-                const htmlContent = `
-                    <html>
-                    <body style="margin:0; padding:10px; text-align:center; font-family:Arial;">
-                        <h3 style="margin:5px 0;">ALT QR TEST</h3>
-                        <p style="margin:5px 0; font-size:12px;">(Pixel/HTML method)</p>
-                        <img src="data:image/png;base64,${QR_IMAGE_BASE64}" style="width:80px; height:80px;">
-                        <p style="margin:5px 0; font-size:10px;">If QR prints = Pixel mode works</p>
-                    </body>
-                    </html>
-                `;
+                const htmlContent = `<html><body style="margin:0;padding:10px;text-align:center;font-family:Arial;">
+                    <h3 style="margin:5px 0;">ALT QR TEST</h3>
+                    <p style="margin:5px 0;font-size:12px;">(Pixel/HTML)</p>
+                    <img src="data:image/png;base64,${QR_IMAGE_BASE64}" style="width:80px;height:80px;">
+                    <p style="margin:5px 0;font-size:10px;">QR = Pixel works</p>
+                </body></html>`;
                 
                 const data = [{
                     type: 'pixel',
@@ -540,7 +474,7 @@
                 }];
                 
                 await qz.print(config, data);
-                log('Test 6: Alt QR sent!', 'success');
+                log('Test 6: Sent!', 'success');
                 setResult(6, true);
             } catch (err) {
                 log(`Test 6 failed: ${err}`, 'error');
@@ -549,10 +483,9 @@
         }
         
         async function runFullDiagnostic() {
-            if (!qzConnected) { log('Not connected! Click Connect first.', 'error'); return; }
+            if (!qzConnected) { log('Not connected!', 'error'); return; }
             
-            log('=== STARTING FULL DIAGNOSTIC ===', 'info');
-            log('Watch the printer and note what prints correctly!', 'info');
+            log('=== FULL DIAGNOSTIC ===', 'info');
             
             await testBasicText();
             await new Promise(r => setTimeout(r, 3000));
@@ -571,12 +504,11 @@
             
             await testAltQR();
             
-            log('=== DIAGNOSTIC COMPLETE ===', 'success');
-            log('Please report which tests printed correctly!', 'info');
+            log('=== COMPLETE ===', 'success');
+            log('Report which tests worked!', 'info');
         }
         
-        log('Page loaded. Click "Connect to QZ Tray" to start.', 'info');
-        log('This page uses QZ demo certificate (demo.qz.io)', 'info');
+        log('Click "Connect to QZ Tray" to start.', 'info');
     </script>
 </body>
 </html>
