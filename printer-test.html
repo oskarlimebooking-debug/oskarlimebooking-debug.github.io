@@ -71,30 +71,15 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        .btn-primary {
-            background: #007bff;
-            color: white;
-        }
+        .btn-primary { background: #007bff; color: white; }
         .btn-primary:hover { background: #0056b3; }
-        .btn-success {
-            background: #28a745;
-            color: white;
-        }
+        .btn-success { background: #28a745; color: white; }
         .btn-success:hover { background: #1e7e34; }
-        .btn-warning {
-            background: #ffc107;
-            color: #333;
-        }
+        .btn-warning { background: #ffc107; color: #333; }
         .btn-warning:hover { background: #e0a800; }
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
+        .btn-danger { background: #dc3545; color: white; }
         .btn-danger:hover { background: #c82333; }
-        .btn-connect {
-            background: #17a2b8;
-            color: white;
-        }
+        .btn-connect { background: #17a2b8; color: white; }
         .btn-connect:hover { background: #138496; }
         
         .log-container {
@@ -147,6 +132,9 @@
         <button class="btn-connect" onclick="connectQZ()" style="width: 100%; padding: 15px; font-size: 16px;">
             🔌 Connect to QZ Tray
         </button>
+        <p style="margin-top: 10px; font-size: 13px; color: #666;">
+            ⚠️ When QZ Tray prompts, click <strong>"Allow"</strong> (and optionally "Remember this decision")
+        </p>
     </div>
     
     <div class="printer-select">
@@ -157,49 +145,42 @@
     </div>
     
     <div class="test-grid">
-        <!-- Test 1: Basic Text -->
         <div class="test-card">
             <h3>Test 1: Basic Text <span id="result1" class="result-badge pending">Not tested</span></h3>
             <p>Prints simple text. This should work on all printers.</p>
             <button class="btn-primary" onclick="testBasicText()">Print Text</button>
         </div>
         
-        <!-- Test 2: Raw ESC/POS QR -->
         <div class="test-card">
             <h3>Test 2: Raw QR Command <span id="result2" class="result-badge pending">Not tested</span></h3>
             <p>Uses ESC/POS native QR commands. <strong>This is what Lime Booking uses.</strong></p>
             <button class="btn-warning" onclick="testRawQR()">Print Raw QR</button>
         </div>
         
-        <!-- Test 3: Image-based QR -->
         <div class="test-card">
             <h3>Test 3: Image QR (Raster) <span id="result3" class="result-badge pending">Not tested</span></h3>
             <p>Sends QR as bitmap image. <strong>Should work on all printers.</strong></p>
             <button class="btn-success" onclick="testImageQR()">Print Image QR</button>
         </div>
         
-        <!-- Test 4: 1D Barcode -->
         <div class="test-card">
             <h3>Test 4: 1D Barcode <span id="result4" class="result-badge pending">Not tested</span></h3>
             <p>Tests Code128 barcode via ESC/POS commands.</p>
             <button class="btn-primary" onclick="testBarcode()">Print Barcode</button>
         </div>
         
-        <!-- Test 5: Raster Image -->
         <div class="test-card">
             <h3>Test 5: Raster Logo <span id="result5" class="result-badge pending">Not tested</span></h3>
             <p>Prints a small test image to verify raster/image support.</p>
             <button class="btn-success" onclick="testRasterImage()">Print Image</button>
         </div>
         
-        <!-- Test 6: Alternative QR method -->
         <div class="test-card">
             <h3>Test 6: Alt QR (Pixel) <span id="result6" class="result-badge pending">Not tested</span></h3>
             <p>Alternative pixel/HTML printing method.</p>
             <button class="btn-warning" onclick="testAltQR()">Print Alt QR</button>
         </div>
         
-        <!-- Full diagnostic -->
         <div class="test-card full-width">
             <h3>🔬 Run Full Diagnostic</h3>
             <p>Runs all tests sequentially with 3-second delays. Watch the printer and note which tests succeed.</p>
@@ -212,14 +193,10 @@
         <pre id="log"></pre>
     </div>
 
-    <!-- Load QZ Tray from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/qz-tray@2.2.4/qz-tray.min.js"></script>
     
     <script>
-        // QR Code as Base64 PNG (small 100x100 QR code saying "TEST123")
         const QR_IMAGE_BASE64 = 'iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAABmJLR0QA/wD/AP+gvaeTAAAB+ElEQVR4nO3dwW3DMBAAwTjI/1NOB0mBANJdZpb2vSe4I0VR+v7+/n4PYn6+fQC8E0SMgIgREDECIkZAxAiIGAERIyBiBESMgIgREDECIkZAxAiIGAERIyBiBESMgIgREDECIkZAxAiIGAERIyBiBESMgIgREDECIkZAxAiIGAERIyBiBESMgIgREDECIkZAxAiIGAERIyBiBESMgIgREDECIkZAxAiIGAERIyBiBESMgIgREDECIkZAxAiIGAERIyBiBESMgIgREDECIkZAxAiImO3bB/C/3t/f7/F4PI77e+PxeNzL5XJ8qI+19liW5fjX+Gvj8bj+vb293uN63X/g+Xz+5yn6mO/fPoBPWJbl+F1er9fj4/zN8Xhcl2X5+P+v1+t6PB6f/g72NU/3crlcz8/Pjw/1x8f5m6fT6To8HP67Xi6X4/+/3+/X8Xi8t9vtGBAxAiJGQMT8y6H+0+l0Op7P5+Of67bb7XY5Ho/X2+12zufzWpblGBAxAiLm3z/lz2az6+12O/55/DOZTK7T6XTdbrdlWZYxIGIERMy/n7Kn0+n1cDgc/xy22+16OZ1Ol9vtNp/PZ1mWZQyIGAER858+IT8ej8f1eDweX+dtms1m18PhsNxut/l8Pp1Op8uwLGNAxAiImP90yl6v19f9fr/+vO77fr+v2+12L5dLc1mWZVmWYVmGZVmGz/MLXvx6HU2rOTQAAAAASUVORK5CYII=';
-        
-        // Simple test logo (small black square pattern)
         const TEST_LOGO_BASE64 = 'iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA/wD/AP+gvaeTAAAA6ElEQVRoge3ZwQ2AIBCEYdp3b5ZgLfZiCZZg79i7F4/GAIMYdv4kXiTu/kFBt+u6CjGf1gfQ1jxE7HwQCxdEREcBR6ICEBGbH+KMJAkgIgJIFHAkKgARsXkIsxJFBSAiAkgUcCQqABGxeQizEkUFICICSBRwJCoAEbF5CLMSRQUgIgJIFHAkKgARsXkIsxJFBSAiAkgUcCQqABGxeQizEkUFICICSBRwJCoAEbF5CLMSRQUgIgJIFHAkKgARsXkIsxJFBSAiAkgUcCQqABGxeQizEkUFICICSBRwJCoAEbF5iLb+3Bf/4AbYiV8fZwAAAABJRU5ErkJggg==';
         
         let qzConnected = false;
@@ -260,31 +237,63 @@
             return document.getElementById('printerList').value;
         }
         
-        // Connect to QZ Tray
+        /// Certificate from demo.qz.io
+        var defined_certificate = "-----BEGIN CERTIFICATE-----\n" +
+            "MIIECzCCAvOgAwIBAgIJALY5e90N8M7SMA0GCSqGSIb3DQEBCwUAMIGaMQswCQYD\n" +
+            "VQQGEwJVUzELMAkGA1UECAwCTlkxEjAQBgNVBAcMCUNhbmFzdG90YTEbMBkGA1UE\n" +
+            "CgwSUVogSW5kdXN0cmllcywgTExDMRswGQYDVQQLDBJRWiBJbmR1c3RyaWVzLCBM\n" +
+            "TEMxFDASBgNVBAMMC3FpbmRpZXMuY29tMRowGAYJKoZIhvcNAQkBFgtxekBxei5p\n" +
+            "bzAeFw0xNTAzMTkwMjM4NDVaFw0yNTAzMTYwMjM4NDVaMIGaMQswCQYDVQQGEwJV\n" +
+            "UzELMAkGA1UECAwCTlkxEjAQBgNVBAcMCUNhbmFzdG90YTEbMBkGA1UECgwSUVog\n" +
+            "SW5kdXN0cmllcywgTExDMRswGQYDVQQLDBJRWiBJbmR1c3RyaWVzLCBMTEMxFDAS\n" +
+            "BgNVBAMMC3FpbmRpZXMuY29tMRowGAYJKoZIhvcNAQkBFgtxekBxei5pbzCCASIw\n" +
+            "DQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANDnS3lPGGEPIhSbLN6EYXPLlgfv\n" +
+            "nXa5yLPUvnv09DKVR1fH0a5vw6JexFBb7p0nLDFzGlKWLqHGZ4T+C1xOX8C0MvMr\n" +
+            "Fw/jzINGBB5MCYCMYx0PjNOxDKPHWNHGWl9U4I1L4APJE9qYPT0V2U3K/L0bOF6z\n" +
+            "S8c4V1c4E4C/JyPb8N8H5bsF5dKMQ+Ej1qeT8rJnj4r2OrzHBX3+Dj4L8v5l+AsE\n" +
+            "lMNxT8v5BQvXQgDJEw8JkQ6M9ZV0z/I+yjNMJsZ/aB7OOLRXBYIRoJhk/PZ5nXi+\n" +
+            "dMmJBZpGqHPGj/bAftGOicvAh0vt5+c/m7I0dMTP/WI5HnP3fpjLNCbFiZ0CAwEA\n" +
+            "AaNQME4wHQYDVR0OBBYEFCYpNLjg08rVSRdLKMpxP3e1m3OLMB8GA1UdIwQYMBaA\n" +
+            "FCYpNLjg08rVSRdLKMpxP3e1m3OLMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEL\n" +
+            "BQADggEBAMnrwJCEVCaL+0Cqf3sCMfM+l4KP9gFxtK/VlQbHWoVGZ1U6IPlALMSv\n" +
+            "LoJdCQnLg/u3wG3D/gj8w0FNGwn/9H/Oj/Q/5LMwQ9wP0q1MWAG0X3r0q1rS8q1s\n" +
+            "h/86btqS0BZMRTaG5TLVLoHv2mI8YnEU7xG+5T9dQ0d+fVYWGPqS7H1N5MnO9n0e\n" +
+            "5KPm0J3H2q9Y3LHGnXDXJLVdjLQ/3k3K2Ct7fxNzHf6PSShGqpMxxcxKj5PtS9st\n" +
+            "mjZcPvWq+A0C+8+M7l3FqzqX4N2HeLMzfjNx9jMiPhBMPbMjDAR7gBq+fD8QPPMF\n" +
+            "XmQvkTIIOG49LKFn0N6UTJ5zn3Dc9EQ=\n" +
+            "-----END CERTIFICATE-----";
+
         async function connectQZ() {
             try {
-                log('Setting up QZ Tray security...');
+                log('Setting up QZ Tray with demo certificate...');
                 
-                // IMPORTANT: Allow unsigned requests for local testing
-                // QZ Tray will show a prompt - click "Allow" and optionally "Remember"
+                // Use embedded demo certificate
                 qz.security.setCertificatePromise(function(resolve, reject) {
-                    // Return empty to trigger unsigned mode
-                    resolve();
+                    resolve(defined_certificate);
                 });
                 
+                // Use QZ's demo signature service
                 qz.security.setSignatureAlgorithm("SHA512");
-                
                 qz.security.setSignaturePromise(function(toSign) {
                     return function(resolve, reject) {
-                        // Return empty to trigger unsigned mode
-                        resolve();
+                        fetch("https://demo.qz.io/assets/signing/sign-message.php?request=" + encodeURIComponent(toSign), {
+                            cache: 'no-store',
+                            headers: { 'Content-Type': 'text/plain' }
+                        })
+                        .then(function(response) {
+                            if (response.ok) {
+                                return response.text();
+                            }
+                            throw new Error('Signature fetch failed');
+                        })
+                        .then(resolve)
+                        .catch(reject);
                     };
                 });
                 
                 log('Connecting to QZ Tray...');
-                log('>>> If QZ Tray shows a security prompt, click ALLOW <<<', 'info');
+                log('If prompted, click ALLOW to trust demo.qz.io', 'info');
                 
-                // Check if already connected
                 if (qz.websocket.isActive()) {
                     log('Already connected!', 'success');
                     updateStatus(true);
@@ -301,7 +310,10 @@
                 
             } catch (err) {
                 log(`Connection failed: ${err}`, 'error');
-                log('Make sure QZ Tray is running (check system tray)', 'error');
+                log('Troubleshooting:', 'info');
+                log('1. Check QZ Tray is running', 'info');
+                log('2. Visit https://demo.qz.io and try printing there first', 'info');
+                log('3. If demo.qz.io works, the issue is with this page', 'info');
                 updateStatus(false);
             }
         }
@@ -319,7 +331,6 @@
                     const option = document.createElement('option');
                     option.value = printer;
                     option.textContent = printer;
-                    // Auto-select Rongta if found
                     if (printer.toLowerCase().includes('rongta') || printer.toLowerCase().includes('rp58')) {
                         option.selected = true;
                         log(`Auto-selected: ${printer}`, 'info');
@@ -331,18 +342,17 @@
             }
         }
         
-        // Test 1: Basic text
         async function testBasicText() {
             if (!qzConnected) { log('Not connected! Click Connect first.', 'error'); return; }
             try {
                 log('Test 1: Sending basic text...');
                 const config = qz.configs.create(getSelectedPrinter());
                 const data = [
-                    '\x1B\x40',          // Initialize printer
-                    '\x1B\x61\x01',      // Center align
-                    '\x1B\x21\x30',      // Double height + width
+                    '\x1B\x40',
+                    '\x1B\x61\x01',
+                    '\x1B\x21\x30',
                     'PRINTER TEST\n',
-                    '\x1B\x21\x00',      // Normal size
+                    '\x1B\x21\x00',
                     '================\n',
                     'Basic text: OK\n',
                     'Date: ' + new Date().toLocaleString() + '\n',
@@ -358,7 +368,6 @@
             }
         }
         
-        // Test 2: Raw ESC/POS QR commands (Epson style - what Lime Booking likely uses)
         async function testRawQR() {
             if (!qzConnected) { log('Not connected! Click Connect first.', 'error'); return; }
             try {
@@ -372,16 +381,15 @@
                 const size0 = String.fromCharCode(Math.floor(qrLength / 256));
                 
                 const data = [
-                    '\x1B\x40',                              // Initialize
-                    '\x1B\x61\x01',                          // Center
+                    '\x1B\x40',
+                    '\x1B\x61\x01',
                     'RAW QR TEST\n',
                     '(ESC/POS Commands)\n\n',
-                    // QR Code commands (Epson standard)
-                    '\x1D\x28\x6B\x04\x00\x31\x41\x32\x00',  // Select model 2
-                    '\x1D\x28\x6B\x03\x00\x31\x43\x06',      // Set size (6 dots)
-                    '\x1D\x28\x6B\x03\x00\x31\x45\x31',      // Error correction M
-                    '\x1D\x28\x6B' + size1 + size0 + '\x31\x50\x30' + qrData,  // Store data
-                    '\x1D\x28\x6B\x03\x00\x31\x51\x30',      // Print QR
+                    '\x1D\x28\x6B\x04\x00\x31\x41\x32\x00',
+                    '\x1D\x28\x6B\x03\x00\x31\x43\x06',
+                    '\x1D\x28\x6B\x03\x00\x31\x45\x31',
+                    '\x1D\x28\x6B' + size1 + size0 + '\x31\x50\x30' + qrData,
+                    '\x1D\x28\x6B\x03\x00\x31\x51\x30',
                     '\n\n',
                     'If you see text instead\n',
                     'of QR = NOT SUPPORTED\n',
@@ -398,7 +406,6 @@
             }
         }
         
-        // Test 3: QR as raster image
         async function testImageQR() {
             if (!qzConnected) { log('Not connected! Click Connect first.', 'error'); return; }
             try {
@@ -407,8 +414,8 @@
                 
                 const config = qz.configs.create(getSelectedPrinter());
                 const data = [
-                    '\x1B\x40',                              // Initialize
-                    '\x1B\x61\x01',                          // Center
+                    '\x1B\x40',
+                    '\x1B\x61\x01',
                     'IMAGE QR TEST\n',
                     '(Raster/Bitmap)\n\n',
                     {
@@ -437,7 +444,6 @@
             }
         }
         
-        // Test 4: 1D Barcode
         async function testBarcode() {
             if (!qzConnected) { log('Not connected! Click Connect first.', 'error'); return; }
             try {
@@ -447,13 +453,13 @@
                 const barcodeData = '123456789';
                 
                 const data = [
-                    '\x1B\x40',                              // Initialize
-                    '\x1B\x61\x01',                          // Center
+                    '\x1B\x40',
+                    '\x1B\x61\x01',
                     '1D BARCODE TEST\n\n',
-                    '\x1D\x68\x50',                          // Barcode height = 80
-                    '\x1D\x77\x02',                          // Barcode width = 2
-                    '\x1D\x48\x02',                          // HRI below barcode
-                    '\x1D\x6B\x49',                          // Code128
+                    '\x1D\x68\x50',
+                    '\x1D\x77\x02',
+                    '\x1D\x48\x02',
+                    '\x1D\x6B\x49',
                     String.fromCharCode(barcodeData.length),
                     barcodeData,
                     '\n\n',
@@ -471,7 +477,6 @@
             }
         }
         
-        // Test 5: Raster image (logo)
         async function testRasterImage() {
             if (!qzConnected) { log('Not connected! Click Connect first.', 'error'); return; }
             try {
@@ -506,13 +511,11 @@
             }
         }
         
-        // Test 6: Alternative QR using pixel/html method
         async function testAltQR() {
             if (!qzConnected) { log('Not connected! Click Connect first.', 'error'); return; }
             try {
                 log('Test 6: Sending QR via pixel method...');
                 
-                // Use pixel printing with HTML
                 const config = qz.configs.create(getSelectedPrinter(), {
                     units: 'mm',
                     size: { width: 58 }
@@ -545,7 +548,6 @@
             }
         }
         
-        // Run all tests
         async function runFullDiagnostic() {
             if (!qzConnected) { log('Not connected! Click Connect first.', 'error'); return; }
             
@@ -573,9 +575,8 @@
             log('Please report which tests printed correctly!', 'info');
         }
         
-        // Log startup message
         log('Page loaded. Click "Connect to QZ Tray" to start.', 'info');
-        log('QZ Tray must be running (check system tray icon)', 'info');
+        log('This page uses QZ demo certificate (demo.qz.io)', 'info');
     </script>
 </body>
 </html>
