@@ -189,7 +189,33 @@
         const TEST_LOGO_BASE64 = 'iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA/wD/AP+gvaeTAAAA6ElEQVRoge3ZwQ2AIBCEYdp3b5ZgLfZiCZZg79i7F4/GAIMYdv4kXiTu/kFBt+u6CjGf1gfQ1jxE7HwQCxdEREcBR6ICEBGbH+KMJAkgIgJIFHAkKgARsXkIsxJFBSAiAkgUcCQqABGxeQizEkUFICICSBRwJCoAEbF5CLMSRQUgIgJIFHAkKgARsXkIsxJFBSAiAkgUcCQqABGxeQizEkUFICICSBRwJCoAEbF5CLMSRQUgIgJIFHAkKgARsXkIsxJFBSAiAkgUcCQqABGxeQizEkUFICICSBRwJCoAEbF5iLb+3Bf/4AbYiV8fZwAAAABJRU5ErkJggg==';
         
         let qzConnected = false;
-        
+
+        // Preprocess PNG images to ensure compatibility with QZ Tray
+        async function preprocessImage(base64Image) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+
+                    // Fill white background (removes transparency issues)
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    // Draw image on white background
+                    ctx.drawImage(img, 0, 0);
+
+                    // Convert to clean base64 PNG
+                    const newBase64 = canvas.toDataURL('image/png').split(',')[1];
+                    resolve(newBase64);
+                };
+                img.onerror = () => reject(new Error('Failed to load image'));
+                img.src = 'data:image/png;base64,' + base64Image;
+            });
+        }
+
         function log(message, type = 'info') {
             const logEl = document.getElementById('log');
             const timestamp = new Date().toLocaleTimeString();
@@ -352,7 +378,12 @@
             if (!qzConnected) { log('Not connected!', 'error'); return; }
             try {
                 log('Test 3: QR as raster image...');
-                
+                log('Preprocessing image for compatibility...', 'info');
+
+                // Preprocess the image to ensure QZ Tray can parse it
+                const processedImage = await preprocessImage(QR_IMAGE_BASE64);
+                log('Image preprocessed successfully', 'success');
+
                 const config = qz.configs.create(getSelectedPrinter());
                 const data = [
                     '\x1B\x40',
@@ -363,8 +394,8 @@
                         type: 'raw',
                         format: 'image',
                         flavor: 'base64',
-                        data: QR_IMAGE_BASE64,
-                        options: { 
+                        data: processedImage,
+                        options: {
                             language: 'ESCPOS',
                             dotDensity: 'double'
                         }
@@ -373,7 +404,7 @@
                     'QR above = SUCCESS\n',
                     '\n\n\n'
                 ];
-                
+
                 await qz.print(config, data);
                 log('Test 3: Sent! Check if QR image printed.', 'success');
                 setResult(3, true);
@@ -419,7 +450,12 @@
             if (!qzConnected) { log('Not connected!', 'error'); return; }
             try {
                 log('Test 5: Raster image...');
-                
+                log('Preprocessing image for compatibility...', 'info');
+
+                // Preprocess the image to ensure QZ Tray can parse it
+                const processedImage = await preprocessImage(TEST_LOGO_BASE64);
+                log('Image preprocessed successfully', 'success');
+
                 const config = qz.configs.create(getSelectedPrinter());
                 const data = [
                     '\x1B\x40',
@@ -429,8 +465,8 @@
                         type: 'raw',
                         format: 'image',
                         flavor: 'base64',
-                        data: TEST_LOGO_BASE64,
-                        options: { 
+                        data: processedImage,
+                        options: {
                             language: 'ESCPOS',
                             dotDensity: 'double'
                         }
@@ -439,7 +475,7 @@
                     'Square above = OK\n',
                     '\n\n\n'
                 ];
-                
+
                 await qz.print(config, data);
                 log('Test 5: Sent!', 'success');
                 setResult(5, true);
