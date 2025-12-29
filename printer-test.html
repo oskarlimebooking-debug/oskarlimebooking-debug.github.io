@@ -190,51 +190,6 @@
         
         let qzConnected = false;
 
-        // Convert PNG to monochrome (1-bit black/white) for thermal printer compatibility
-        async function preprocessImage(base64Image) {
-            return new Promise((resolve, reject) => {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    const ctx = canvas.getContext('2d');
-
-                    // Fill white background
-                    ctx.fillStyle = 'white';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                    // Draw image
-                    ctx.drawImage(img, 0, 0);
-
-                    // Get image data and convert to monochrome (pure black and white)
-                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    const data = imageData.data;
-
-                    // Convert to pure black/white using threshold (127)
-                    for (let i = 0; i < data.length; i += 4) {
-                        // Calculate grayscale value
-                        const gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
-                        // Apply threshold to make pure black or white
-                        const bw = gray > 127 ? 255 : 0;
-                        data[i] = bw;     // Red
-                        data[i + 1] = bw; // Green
-                        data[i + 2] = bw; // Blue
-                        // Alpha stays at 255 (fully opaque)
-                    }
-
-                    // Put the monochrome image back
-                    ctx.putImageData(imageData, 0, 0);
-
-                    // Convert to base64 PNG
-                    const newBase64 = canvas.toDataURL('image/png').split(',')[1];
-                    resolve(newBase64);
-                };
-                img.onerror = () => reject(new Error('Failed to load image'));
-                img.src = 'data:image/png;base64,' + base64Image;
-            });
-        }
-
         function log(message, type = 'info') {
             const logEl = document.getElementById('log');
             const timestamp = new Date().toLocaleTimeString();
@@ -397,28 +352,27 @@
             if (!qzConnected) { log('Not connected!', 'error'); return; }
             try {
                 log('Test 3: QR as raster image...');
-                log('Preprocessing image for compatibility...', 'info');
 
-                // Preprocess the image to ensure QZ Tray can parse it
-                const processedImage = await preprocessImage(QR_IMAGE_BASE64);
-                log('Image preprocessed successfully', 'success');
+                // Use pixel/HTML mode for reliable image printing on thermal printers
+                // This avoids the raw ESC/POS image conversion issues
+                const config = qz.configs.create(getSelectedPrinter(), {
+                    units: 'mm',
+                    size: { width: 58 }
+                });
 
-                const config = qz.configs.create(getSelectedPrinter());
-                const data = [
-                    '\x1B\x40',
-                    '\x1B\x61\x01',
-                    'IMAGE QR TEST\n',
-                    '(Raster/Bitmap)\n\n',
-                    {
-                        type: 'pixel',
-                        format: 'image',
-                        flavor: 'base64',
-                        data: processedImage
-                    },
-                    '\n\n',
-                    'QR above = SUCCESS\n',
-                    '\n\n\n'
-                ];
+                const htmlContent = `<html><body style="margin:0;padding:10px;text-align:center;font-family:Arial;background:white;">
+                    <h3 style="margin:5px 0;font-size:14px;">IMAGE QR TEST</h3>
+                    <p style="margin:5px 0;font-size:11px;">(Raster/Bitmap)</p>
+                    <img src="data:image/png;base64,${QR_IMAGE_BASE64}" style="width:100px;height:100px;">
+                    <p style="margin:10px 0;font-size:11px;">QR above = SUCCESS</p>
+                </body></html>`;
+
+                const data = [{
+                    type: 'pixel',
+                    format: 'html',
+                    flavor: 'plain',
+                    data: htmlContent
+                }];
 
                 await qz.print(config, data);
                 log('Test 3: Sent! Check if QR image printed.', 'success');
@@ -465,27 +419,26 @@
             if (!qzConnected) { log('Not connected!', 'error'); return; }
             try {
                 log('Test 5: Raster image...');
-                log('Preprocessing image for compatibility...', 'info');
 
-                // Preprocess the image to ensure QZ Tray can parse it
-                const processedImage = await preprocessImage(TEST_LOGO_BASE64);
-                log('Image preprocessed successfully', 'success');
+                // Use pixel/HTML mode for reliable image printing on thermal printers
+                // This avoids the raw ESC/POS image conversion issues
+                const config = qz.configs.create(getSelectedPrinter(), {
+                    units: 'mm',
+                    size: { width: 58 }
+                });
 
-                const config = qz.configs.create(getSelectedPrinter());
-                const data = [
-                    '\x1B\x40',
-                    '\x1B\x61\x01',
-                    'RASTER IMAGE TEST\n\n',
-                    {
-                        type: 'pixel',
-                        format: 'image',
-                        flavor: 'base64',
-                        data: processedImage
-                    },
-                    '\n\n',
-                    'Square above = OK\n',
-                    '\n\n\n'
-                ];
+                const htmlContent = `<html><body style="margin:0;padding:10px;text-align:center;font-family:Arial;background:white;">
+                    <h3 style="margin:5px 0;font-size:14px;">RASTER IMAGE TEST</h3>
+                    <img src="data:image/png;base64,${TEST_LOGO_BASE64}" style="width:60px;height:60px;">
+                    <p style="margin:10px 0;font-size:11px;">Square above = OK</p>
+                </body></html>`;
+
+                const data = [{
+                    type: 'pixel',
+                    format: 'html',
+                    flavor: 'plain',
+                    data: htmlContent
+                }];
 
                 await qz.print(config, data);
                 log('Test 5: Sent!', 'success');
